@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.flyco.roundview.RoundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="269dp"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    app:rv_backgroundColor="#ffffff"
+    app:rv_cornerRadius="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="19dp"
+        android:text="提示"
+        android:textColor="#ff333333"
+        android:textSize="17sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="15dp"
+        android:text="请确定是否结束拜访，拜访结束请删除访客管家app"
+        android:textColor="#ff333333"
+        android:textSize="14sp" />
+
+
+    <com.flyco.roundview.RoundRelativeLayout
+        android:id="@+id/rrl_queding"
+        android:layout_width="242dp"
+        android:layout_height="37dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="19dp"
+        app:rv_backgroundColor="#0D8BF1"
+        app:rv_cornerRadius="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="确定"
+            android:textColor="#ffffffff"
+            android:textSize="17sp" />
+
+    </com.flyco.roundview.RoundRelativeLayout>
+
+</com.flyco.roundview.RoundLinearLayout>
+
