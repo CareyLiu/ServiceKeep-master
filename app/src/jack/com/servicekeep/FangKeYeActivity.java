@@ -14,7 +14,9 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -152,8 +154,7 @@ public class FangKeYeActivity extends Activity implements EasyPermissions.Permis
     protected void onResume() {
         super.onResume();
 
-        deviceManger.enableDeviceManager();
-
+        //deviceManger.enableDeviceManager();
 
         if (quanXianFlag.equals("0")) {
             rrlQubaifang1.setVisibility(View.VISIBLE);
@@ -164,16 +165,16 @@ public class FangKeYeActivity extends Activity implements EasyPermissions.Permis
 
             tvXinxi.setText("您的手机未开启相册、定位等相应权限");
 
-            if (isServiceRunning(getApplicationContext(), "WorkService")) {
-                KeepAliveManager.INSTANCE.stopKeepAliveSerice(getApplicationContext());
-            }
+//            if (isServiceRunning(getApplicationContext(), "WorkService")) {
+//                KeepAliveManager.INSTANCE.stopKeepAliveSerice(getApplicationContext());
+//            }
 
 
             return;
         } else {
-            if (!isServiceRunning(getApplicationContext(), "WorkService")) {
-                KeepAliveManager.INSTANCE.startKeepAliveService(FangKeYeActivity.this);
-            }
+//            if (!isServiceRunning(getApplicationContext(), "WorkService")) {
+//                KeepAliveManager.INSTANCE.startKeepAliveService(FangKeYeActivity.this);
+//            }
 
             Log.i("WorkService", "onResume");
             if (mAudioManger.getActiveRecordingConfigurations().isEmpty()) {
@@ -187,6 +188,8 @@ public class FangKeYeActivity extends Activity implements EasyPermissions.Permis
                 llWeigui.setVisibility(View.GONE);
                 llHefa.setVisibility(View.VISIBLE);
             } else {
+
+
                 rrlQubaifang1.setVisibility(View.VISIBLE);
                 rrlQubaifang2.setVisibility(View.GONE);
 
@@ -196,6 +199,9 @@ public class FangKeYeActivity extends Activity implements EasyPermissions.Permis
         }
 
     }
+
+
+
 
     /**
      * 注册事件通知

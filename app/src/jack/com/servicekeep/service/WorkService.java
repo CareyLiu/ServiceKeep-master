@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.telephony.PhoneStateListener;
@@ -74,6 +75,8 @@ public class WorkService extends Service {
     public static int shangChuanGuo = 0;//0 没有上传过 1.上传过
 
     private TelephonyManager mTm;
+
+    Handler handler;
     /**
      * 监听电话的监听器
      */
@@ -92,7 +95,9 @@ public class WorkService extends Service {
         mPhoneStateListener = new MyPhoneStateListener();
         mTm.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 
+
     }
+
 
     /**
      * 停止服务
@@ -173,6 +178,7 @@ public class WorkService extends Service {
             public void run() {
                 LogUtils.d(TAG, "WorkService ---------- onStartCommand Service工作了" + i);
 
+
                 if (StringUtils.isEmpty(PreferenceHelper.getInstance(getApplication()).getString("fkjkr", ""))) {
                     return;
                 }
@@ -188,38 +194,58 @@ public class WorkService extends Service {
 
                     LogUtils.d(TAG, "WorkService ---------- 开启了定位" + i);
 
+                } else {
+
+                    if (mAudioManger.getActiveRecordingConfigurations().isEmpty()) {
+                        Log.i("WorkService", "没有开启录音");
+
+                        weiGuiZhuangTai = 0;//没有违规
+                        shangChuanGuo = 0;//
+                    } else {
+                        if (shangChuanGuo == 1) {
+
+                        } else {
+                            Log.i("WorkService", "有开启录音");
+                            weiGuiZhuangTai = 1;//违规
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Looper.prepare();
+                                    System.out.println("WorkService  Thread=========" + Thread.currentThread().getName());
+                                    handler = new Handler(Looper.getMainLooper()) {
+
+                                        @Override
+                                        public void handleMessage(android.os.Message msg) {
+                                            setToast();
+                                            super.handleMessage(msg);
+                                        }
+
+
+                                    };
+                                    android.os.Message message = handler.obtainMessage();
+                                    message.arg1 = 1;
+                                    handler.sendMessage(message);
+
+                                    Looper.loop();
+                                }
+                            }).start();
+
+
+                        }
+
+                    }
+
+                    if (weiGuiZhuangTai == 1) { //违规了
+                        if (shangChuanGuo == 0) {//没有上传过
+                            getFangKeNet();
+                        }
+                    }
+
                 }
 
                 i = i + 1;
 
 
-                if (mAudioManger.getActiveRecordingConfigurations().isEmpty()) {
-                    Log.i("WorkService", "没有开启录音");
-                    luYinState = "0";
-
-                    weiGuiZhuangTai = 0;//没有违规
-                    shangChuanGuo = 0;//
-                } else {
-                    Log.i("WorkService", "有开启录音");
-                    Looper.prepare();
-                    setToast();
-
-                    weiGuiZhuangTai = 1;//违规
-
-                    Log.i("ThreadMMMMM", "Thread_FUWU : " + android.os.Process.myTid() + "");
-                    Looper.loop();
-                }
-
-                if (weiGuiZhuangTai == 1) { //违规了
-                    if (shangChuanGuo == 0) {//没有上传过
-                        getFangKeNet();
-                    }
-                }
-
-
-                if (serviceToActivityCallBack != null)
-                    serviceToActivityCallBack.progressCall();
-                Log.i("MyService", "接口回调方式：test+++" + progress);
             }
 
 
@@ -230,13 +256,16 @@ public class WorkService extends Service {
         return START_STICKY;
     }
 
-    /**
-     * 设置progress的借口回调
-     *
-     * @param serviceToActivityCallBack
-     */
-    public void setProgressCallBack(ServiceToActivityCallBack serviceToActivityCallBack) {
-        this.serviceToActivityCallBack = serviceToActivityCallBack;
+
+    public void setToast() {
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_LONG);
+
+        LayoutInflater inflater = (LayoutInflater) getApplication().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.your_custom_layout, null);
+        toast.setView(view);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
     @Override
@@ -250,16 +279,6 @@ public class WorkService extends Service {
         LogUtils.d(TAG, "WorkService ------- is onDestroy!!!");
     }
 
-    public void setToast() {
-        Toast toast = new Toast(getApplicationContext());
-        toast.setDuration(Toast.LENGTH_LONG);
-
-        LayoutInflater inflater = (LayoutInflater) getApplication().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.your_custom_layout, null);
-        toast.setView(view);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-    }
 
     /**
      * 通过这个方法，可以在 activity 中拿到 service 对象
@@ -276,7 +295,7 @@ public class WorkService extends Service {
         map.put("code", "15004");
         map.put("key", Urls.key);
         map.put("fkjkr_id", PreferenceHelper.getInstance(getApplication()).getString("fkjkr", ""));
-        map.put("violations", "1");
+        map.put("violations", "2");
 
 
         Gson gson = new Gson();
